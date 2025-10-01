@@ -28,7 +28,7 @@ public class UserService {
         user.setEmail(email);
         user.setPassword(hashedPassword);
         user.setCreatedDate(LocalDateTime.now());
-        user.setUserName(username);
+        user.setUserName(username == null || username.equalsIgnoreCase("") ? email.split("@")[0] : username);
         mongoTemplate.save(user);
         return user;
     }

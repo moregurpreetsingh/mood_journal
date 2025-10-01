@@ -1,21 +1,18 @@
-import React, { useState, useEffect } from "react"
-import { BrowserRouter as Router } from "react-router-dom"
-import AppRoutes from "./routes/AppRoutes"
-import { UserContext } from "./contexts/UserContext"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import Dashboard from "./pages/Dashboard";
 
-export default function App() {
-  const [user, setUser] = useState(null)
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (storedUser) setUser(JSON.parse(storedUser))
-  }, [])
-
+function App() {
   return (
-    <UserContext.Provider value={{ user, setUser }}>
-      <Router>
-        <AppRoutes />
-      </Router>
-    </UserContext.Provider>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
+  );
 }
+
+export default App;
