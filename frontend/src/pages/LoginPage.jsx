@@ -14,11 +14,20 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(""); // reset error before submit
     try {
-      await loginUser(form);
+      const response = await loginUser(form);
+      console.log(response);
+      if (response && response.data.userId) {
+        sessionStorage.setItem("userId", response.data.userId);
+      } else {
+        throw new Error("Invalid login response");
+      }
+
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid credentials");
+      console.error(err);
     }
   };
 

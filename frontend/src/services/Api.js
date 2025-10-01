@@ -8,4 +8,6 @@ export const loginUser = async (userData) => {
   return api.post("/user/login", userData);
 };
 
-// Add more API calls as needed...
+export const saveCurrentMood = async ({ userId, mood }) => {
+  return api.post("user/saveCurrentMood", { userId, mood });
+};

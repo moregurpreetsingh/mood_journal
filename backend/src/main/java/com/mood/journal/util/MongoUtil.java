@@ -1,8 +1,13 @@
 package com.mood.journal.util;
 
 import com.mongodb.client.MongoClients;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+@Configuration
+@EnableMongoAuditing
 public class MongoUtil {
 
     private static MongoTemplate mongoTemplate;

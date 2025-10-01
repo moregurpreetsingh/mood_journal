@@ -3,6 +3,7 @@ package com.mood.journal.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -14,8 +15,9 @@ import lombok.Setter;
 @Document(collection = "users")
 public class User implements Serializable{
 
-	private static final long serialBersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	
+	@Id
 	private String id;
 	
 	@Field(name = "user_name")
