@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { loginUser } from "../../services/api"; // adjust path if needed
+import { loginUser } from "../../services/api";
+import { useUser } from "../../contexts/UserContext";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "", remember: false });
@@ -8,6 +9,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  // ✅ Move this to the top level
+  const { login } = useUser();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -24,8 +28,10 @@ export default function LoginPage() {
 
     try {
       const response = await loginUser(form);
+      console.log(response.data.userId);
       if (response?.data?.userId) {
-        sessionStorage.setItem("userId", response.data.userId);
+        login(response.data.userId); // ✅ Call context login function
+
         navigate("/dashboard");
       } else {
         throw new Error("Invalid login response");
@@ -41,24 +47,9 @@ export default function LoginPage() {
   return (
     <>
       <style>{`
-        * {
-          box-sizing: border-box;
-        }
-
-        body {
-          margin: 0;
-          font-family: Arial, sans-serif;
-          background-color: #f3f4f6;
-        }
-
-        .container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-          padding: 1rem;
-        }
-
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background-color: #f3f4f6; }
+        .container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1rem; }
         .login-card {
           background-color: white;
           padding: 2rem;
@@ -68,7 +59,6 @@ export default function LoginPage() {
           width: 100%;
           border: 1px solid #e5e7eb;
         }
-
         .login-card h2 {
           margin: 0 0 0.5rem;
           text-align: center;
@@ -76,29 +66,22 @@ export default function LoginPage() {
           font-weight: bold;
           color: #111827;
         }
-
         .login-card p.subtitle {
           text-align: center;
           font-size: 0.9rem;
           color: #6b7280;
           margin-bottom: 1.5rem;
         }
-
-        .form-group {
-          margin-bottom: 1rem;
-        }
-
+        .form-group { margin-bottom: 1rem; }
         label {
           display: block;
           font-size: 0.9rem;
           margin-bottom: 0.25rem;
           color: #374151;
         }
-
         .input-icon-group {
           position: relative;
         }
-
         .input-icon-group input {
           width: 100%;
           padding: 0.6rem 0.75rem 0.6rem 2.5rem;
@@ -107,11 +90,9 @@ export default function LoginPage() {
           border-radius: 8px;
           outline: none;
         }
-
         .input-icon-group input:focus {
           border-color: #111827;
         }
-
         .input-icon {
           position: absolute;
           left: 10px;
@@ -120,7 +101,6 @@ export default function LoginPage() {
           color: #9ca3af;
           font-size: 1rem;
         }
-
         .show-toggle {
           position: absolute;
           right: 10px;
@@ -132,13 +112,11 @@ export default function LoginPage() {
           color: #6b7280;
           cursor: pointer;
         }
-
         .helper-text {
           font-size: 0.75rem;
           color: #6b7280;
           margin-top: 0.3rem;
         }
-
         .row {
           display: flex;
           justify-content: space-between;
@@ -146,22 +124,18 @@ export default function LoginPage() {
           font-size: 0.85rem;
           margin-top: 0.5rem;
         }
-
         .checkbox-group {
           display: flex;
           align-items: center;
           gap: 0.3rem;
         }
-
         .row a {
           color: #111827;
           text-decoration: none;
         }
-
         .row a:hover {
           text-decoration: underline;
         }
-
         .login-btn {
           width: 100%;
           padding: 0.7rem;
@@ -173,16 +147,13 @@ export default function LoginPage() {
           cursor: pointer;
           margin-top: 1rem;
         }
-
         .login-btn:hover {
           background-color: #111;
         }
-
         .login-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
         }
-
         .spinner {
           border: 2px solid white;
           border-top: 2px solid black;
@@ -192,33 +163,28 @@ export default function LoginPage() {
           animation: spin 1s linear infinite;
           margin: auto;
         }
-
         @keyframes spin {
           to {
             transform: rotate(360deg);
           }
         }
-
         .error {
           color: #dc2626;
           font-size: 0.85rem;
           margin-bottom: 1rem;
           text-align: center;
         }
-
         .register-link {
           text-align: center;
           margin-top: 1rem;
           font-size: 0.85rem;
           color: #6b7280;
         }
-
         .register-link a {
           color: #111827;
           text-decoration: none;
           margin-left: 0.25rem;
         }
-
         .register-link a:hover {
           text-decoration: underline;
         }
@@ -232,7 +198,7 @@ export default function LoginPage() {
           {error && <div className="error">{error}</div>}
 
           <form onSubmit={handleSubmit}>
-            {/* Email Field */}
+            {/* Email */}
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <div className="input-icon-group">
@@ -249,7 +215,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Password Field */}
+            {/* Password */}
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <div className="input-icon-group">
@@ -271,12 +237,10 @@ export default function LoginPage() {
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
-              <p className="helper-text">
-                Keep your password secure. Do not share it with anyone.
-              </p>
+              <p className="helper-text">Keep your password secure. Do not share it with anyone.</p>
             </div>
 
-            {/* Remember Me and Forgot Password */}
+            {/* Remember Me & Forgot Password */}
             <div className="row">
               <label className="checkbox-group">
                 <input
@@ -290,12 +254,8 @@ export default function LoginPage() {
               <Link to="/forgot-password">Forgot password?</Link>
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="login-btn"
-              disabled={loading}
-            >
+            {/* Submit */}
+            <button type="submit" className="login-btn" disabled={loading}>
               {loading ? <div className="spinner" /> : "Login"}
             </button>
           </form>

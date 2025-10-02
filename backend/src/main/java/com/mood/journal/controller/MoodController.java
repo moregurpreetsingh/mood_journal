@@ -49,7 +49,8 @@ public class MoodController {
 	public ResponseEntity<?> mostRecentTodayMood(@RequestBody MoodRequest moodRequest){
 		try {
 			Mood recentMood = moodDao.todayMostRecentMood(moodRequest.getUserId());
-			return  ResponseEntity.ok(recentMood);
+			MoodResponse response = new MoodResponse(recentMood);
+			return  ResponseEntity.ok(response);
 		}catch(Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
