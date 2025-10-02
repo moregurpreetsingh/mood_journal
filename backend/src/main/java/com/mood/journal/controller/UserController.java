@@ -63,22 +63,4 @@ public class UserController {
 	    }
 	}
 	
-	
-	//for saving the mood data
-	@PostMapping("/saveCurrentMood")
-	public ResponseEntity<?> saveCurrentMood(@RequestBody MoodRequest moodRequest){
-		try {
-			Mood currentMood = new Mood();
-			currentMood.setCreatedDate(LocalDateTime.now());
-			currentMood.setUserId(moodRequest.getUserId());
-			currentMood.setMood(moodRequest.getMood());
-			mongoTemplate.save(currentMood);
-			Map<String, Object> res = new HashMap<>();
-			res.put("currentMoodId", currentMood.getId());
-			return ResponseEntity.ok(res);
-		}catch(Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage()); 
-		}
-	}
-	
 }

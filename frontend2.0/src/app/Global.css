@@ -1,0 +1,21 @@
+/* In your global CSS file (e.g., index.css or global.css) */
+
+.home-background {
+  position: fixed; /* fix so no scroll */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+    url('/assets/bg.jpg'); /* adjust path if needed */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1; /* behind content */
+}
+
+/* Prevent scrolling */
+html, body, #root {
+  overflow: hidden;
+}

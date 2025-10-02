@@ -11,7 +11,6 @@ public class MoodRequest {
 	@NotBlank(message = "UserId is required")
 	private String userId;
 	
-	@NotBlank(message = "Mood is required")
     private String mood;
 	
 }

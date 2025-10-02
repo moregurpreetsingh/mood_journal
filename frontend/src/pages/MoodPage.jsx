@@ -1,10 +1,14 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { MoodPicker } from "../components/MoodPicker"
 import { MoodToday } from "../components/MoodToday"
 import { MoodRecent } from "../components/MoodRecent"
-import { saveCurrentMood } from "../services/api" // Adjust import path
+import {
+  saveCurrentMood,
+  mostRecentTodayMood,
+  mostRecentMoods,
+} from "../services/api"
 
 const MOODS = [
   { emoji: "😀", label: "Happy" },
@@ -31,65 +35,136 @@ const MOODS = [
 
 const STORAGE_KEY = "mood-log-v1"
 
+// ✅ Map mood label to emoji and build entry object
+function mapMoodToEntry(moodLabel, timestamp) {
+  const found = MOODS.find((m) => m.label === moodLabel)
+  return {
+    emoji: found?.emoji || "❓",
+    label: moodLabel,
+    timestamp,
+  }
+}
+
 export default function MoodPage() {
   const [showPicker, setShowPicker] = useState(true)
   const [log, setLog] = useState([])
+  const [today, setToday] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [userId, setUserId] = useState(null)
 
-  // Load userId from sessionStorage on mount
+  // 🔐 Load userId from sessionStorage
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId")
-    if (storedUserId) setUserId(storedUserId)
+    if (storedUserId) {
+      setUserId(storedUserId)
+    } else {
+      // fallback: hydrate from localStorage
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY)
+        if (raw) {
+          const parsed = JSON.parse(raw)
+          if (Array.isArray(parsed)) {
+            setLog(parsed)
+            setToday(parsed[parsed.length - 1])
+          }
+        }
+      } catch {}
+    }
   }, [])
 
-  // hydrate mood log from localStorage
+  // 📡 Fetch from API when userId is available
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) {
-        const parsed = JSON.parse(raw)
-        if (Array.isArray(parsed)) setLog(parsed)
+    if (!userId) return
+
+    async function fetchMoodData() {
+      setLoading(true)
+      setError(null)
+      try {
+        const [todayRes, recentRes] = await Promise.all([
+          mostRecentTodayMood({ userId }),
+          mostRecentMoods({ userId }),
+        ])
+
+        // Today's mood
+        if (todayRes?.data) {
+          const { mood, createdDate } = todayRes.data
+          setToday(mapMoodToEntry(mood, createdDate))
+        }
+
+        // Recent moods
+        if (Array.isArray(recentRes?.data)) {
+          const mapped = recentRes.data.map((entry) =>
+            mapMoodToEntry(entry.mood, entry.formattedDate)
+          )
+          setLog(mapped)
+        }
+      } catch (err) {
+        setError("Failed to fetch mood data.")
+        console.error(err)
+      } finally {
+        setLoading(false)
       }
-    } catch {}
-  }, [])
+    }
 
-  // persist mood log to localStorage
+    fetchMoodData()
+  }, [userId])
+
+  // 💾 Save to localStorage if no backend
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(log))
-    } catch {}
-  }, [log])
+    if (!userId) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(log))
+      } catch {}
+    }
+  }, [log, userId])
 
-  const today = useMemo(() => (log.length ? log[log.length - 1] : undefined), [log])
-
+  // ✅ Handle mood selection
   async function handleSelect(mood) {
     if (!userId) {
-      setError("User not logged in. Please login first.");
-      return;
+      setError("User not logged in. Please login first.")
+      return
     }
-  
-    setLoading(true);
-    setError(null);
-  
+
+    setLoading(true)
+    setError(null)
+
     try {
-      // Pass an object with userId and mood label
-      await saveCurrentMood({ userId, mood: mood.label });
-  
-      const newEntry = { ...mood, timestamp: new Date().toISOString() };
-      setLog((prev) => [...prev, newEntry]);
-      setShowPicker(false);
+      await saveCurrentMood({ userId, mood: mood.label })
+
+      // Re-fetch updated data from backend
+      const [todayRes, recentRes] = await Promise.all([
+        mostRecentTodayMood({ userId }),
+        mostRecentMoods({ userId }),
+      ])
+
+      if (todayRes?.data) {
+        const { mood, createdDate } = todayRes.data
+        setToday(mapMoodToEntry(mood, createdDate))
+      }
+
+      if (Array.isArray(recentRes?.data)) {
+        const mapped = recentRes.data.map((entry) =>
+          mapMoodToEntry(entry.mood, entry.formattedDate)
+        )
+        setLog(mapped)
+      }
+
+      setShowPicker(false)
     } catch (err) {
-      setError("Failed to save mood. Please try again.");
-      console.error(err);
+      setError("Failed to save mood. Please try again.")
+      console.error(err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }  
+  }
 
   function clearHistory() {
     setLog([])
+    setToday(null)
+    if (!userId) {
+      localStorage.removeItem(STORAGE_KEY)
+    }
   }
 
   return (
@@ -129,7 +204,7 @@ export default function MoodPage() {
           </button>
         </div>
 
-        {/* Today */}
+        {/* Today's mood */}
         <section
           aria-labelledby="today-heading"
           className="mb-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
@@ -142,8 +217,11 @@ export default function MoodPage() {
           </div>
         </section>
 
-        {/* Recent */}
-        <section aria-labelledby="recent-heading" className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        {/* Recent moods */}
+        <section
+          aria-labelledby="recent-heading"
+          className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        >
           <h2 id="recent-heading" className="text-2xl font-semibold">
             Recent moods
           </h2>
