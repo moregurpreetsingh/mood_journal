@@ -108,15 +108,21 @@ export default function DashboardPage() {
 
   // Handle mood selection from dialog
   const handleMoodSelect = async (moodLabel) => {
-    setTodaysMood({
-      emoji: moodEmojiMap[moodLabel] || "❓",
-      label: moodLabel,
-      timestamp: new Date().toLocaleString(),
-    });
-    setIsPickerOpen(false);
-    // Reload today's mood and recent moods in case backend updated them
-    await loadTodaysMood();
-    await loadRecentMoods();
+    console.log("handleMoodSelect called with:", moodLabel);
+    try{
+      setTodaysMood({
+        emoji: moodEmojiMap[moodLabel] || "❓",
+        label: moodLabel,
+        timestamp: new Date().toLocaleString(),
+      });
+      setIsPickerOpen(false);
+      console.log("Before loading moods...");
+      await loadTodaysMood();
+      await loadRecentMoods();
+      console.log("After loading moods...");
+    }catch(error){
+      console.log("Error loading moods:", error);
+    }
   };
 
   return (
@@ -171,33 +177,68 @@ export default function DashboardPage() {
           }
         }
         .button-primary {
-          background-color: #2563eb;
-          color: white;
-          padding: 8px 16px;
-          border-radius: 12px;
-          border: none;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
+          width: 100%;
+          padding: 0.75rem 1rem;
+          background-color: #000000;
+          color: #ffffff;
           font-size: 1rem;
           font-weight: 600;
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+          margin-top: 1rem;
+          transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
         }
+        
         .button-primary:hover {
-          background-color: #1d4ed8;
+          background-color: #111111; /* Slightly lighter black */
+          box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
         }
+        
+        .button-primary:active {
+          background-color: #1a1a1a; /* Even lighter black for click */
+          transform: scale(0.98);
+          box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .button-primary:focus {
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4); /* White glow for focus */
+        }
+        
         .button-secondary {
           background-color: transparent;
           border: 1px solid #9ca3af;
           color: #4b5563;
-          padding: 8px 16px;
+          padding: 10px 20px;
           border-radius: 12px;
           cursor: pointer;
-          transition: background-color 0.2s ease;
+          transition: all 0.2s ease;
           font-size: 1rem;
           font-weight: 600;
+          outline: none;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
+        
         .button-secondary:hover {
-          background-color: #e5e7eb;
+          background-color: #f3f4f6; /* subtle light gray */
+          border-color: #6b7280;     /* darker gray border */
+          color: #1f2937;            /* darker text */
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
+        
+        .button-secondary:active {
+          background-color: #e5e7eb;
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+          transform: scale(0.98);
+        }
+        
+        .button-secondary:focus {
+          border-color: #2563eb; /* blue focus ring */
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4);
+        }
+        
         .card {
           background-color: white;
           border-radius: 24px;

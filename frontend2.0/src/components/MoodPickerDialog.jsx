@@ -25,7 +25,7 @@ const moods = [
   { id: 'hopeful', emoji: '🤞', label: 'Hopeful' },
 ];
 
-export default function MoodPickerDialog({ isOpen, onClose, userId }) {
+export default function MoodPickerDialog({ isOpen, onClose, userId, onSelect }) {
   const dialogRef = useRef(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const moodButtonsRefs = useRef([]);
@@ -52,15 +52,20 @@ export default function MoodPickerDialog({ isOpen, onClose, userId }) {
   async function handleSelectMood(moodId) {
     const moodObj = moods.find(m => m.id === moodId);
     if (!moodObj) return;
-
+  
     try {
       await saveCurrentMood({ userId, mood: moodObj.label });
+  
+      if (typeof onSelect === 'function') {
+        await onSelect(moodObj.label);  
+      }
+  
       onClose();
     } catch (err) {
       console.error('Failed to save mood:', err);
-      // Optionally show error feedback here
     }
   }
+  
 
   function onMoodKeyDown(e) {
     const cols = 5;
