@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import com.mood.journal.model.Mood;
 import com.mood.journal.model.User;
 import com.mood.journal.request.MoodRequest;
 import com.mood.journal.request.UserRequest;
+import com.mood.journal.response.UserResponse;
 import com.mood.journal.service.UserService;
 import com.mood.journal.util.MongoUtil;
 
@@ -29,6 +31,8 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	
+	@Autowired
+	UserDao userDao;
 	
 	//for registering the user
 	@PostMapping("/register")
@@ -62,5 +66,42 @@ public class UserController {
 	        return ResponseEntity.badRequest().body(e.getMessage());
 	    }
 	}
+	
+	//for getting user details
+	@PostMapping("/getUserDetails")
+	public ResponseEntity<?> getUserDetails(@RequestBody UserRequest user){
+		try{
+			User userDetails = userDao.getUserDetails(user.getUserId());
+			UserResponse response = new UserResponse(userDetails);
+			return ResponseEntity.ok(response);
+		}catch(Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+	
+	@PostMapping("/changePassword")
+	public ResponseEntity<?> changePassword(@RequestBody UserRequest user){
+		try{
+			User userDetails = userService.changePassword(user.getUserId(), user.getPassword(), user.getNewPass(), user.getConfirmPass());
+			UserResponse response = new UserResponse(userDetails);
+			return ResponseEntity.ok(response);
+		}catch(Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+	
+	@PostMapping("/changeUserName")
+	public ResponseEntity<?> changeUserName(@RequestBody UserRequest user){
+		try{
+			User userDetails = userDao.getUserDetails(user.getUserId());
+			userDetails.setUserName(user.getUserName() != null ? user.getUserName() : userDetails.getUserName());
+			mongoTemplate.save(userDetails);
+			UserResponse response = new UserResponse(userDetails);
+			return ResponseEntity.ok(response);
+		}catch(Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+	
 	
 }

@@ -19,3 +19,15 @@ export const mostRecentTodayMood = async ({ userId}) => {
 export const mostRecentMoods = async ({ userId}) => {
   return api.post("mood/mostRecentMoods", { userId});
 };
+
+export const getUserDetails = async ( userData ) => {
+  return api.post("user/getUserDetails",  userData );
+}
+
+export const changePassword = async ( userData ) => {
+  return api.post("user/changePassword", userData );
+}
+
+export const changeUserName = async ( userData ) => {
+  return api.post("user/changeUserName", userData );
+}

@@ -25,4 +25,10 @@ public class UserDaoImpl implements UserDao {
         query.addCriteria(Criteria.where("email").is(email));
         return mongoTemplate.findOne(query, User.class);
     }
+	
+	public User getUserDetails(String userId) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").is(userId));
+		return mongoTemplate.findOne(query, User.class);
+	}
 }
