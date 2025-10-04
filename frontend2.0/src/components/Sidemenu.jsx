@@ -61,7 +61,7 @@ export default function AppSidebar() {
           flex-direction: column;
           height: 100vh;
           width: 260px;
-          background-color: #f9fafb;
+          background-color: #ececec;
           color: #374151;
           border-right: 1px solid #e5e7eb;
           font-family: sans-serif;

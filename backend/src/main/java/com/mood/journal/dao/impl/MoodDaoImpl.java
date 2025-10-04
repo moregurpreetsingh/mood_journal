@@ -60,6 +60,14 @@ public class MoodDaoImpl implements MoodDao{
 	    List<Mood> result = mongoTemplate.find(query, Mood.class);
 	    return result.isEmpty() ? null : result.get(0);
 	}
+	
 
+	public List<Mood> getWeeklyMoods(String userId, LocalDate sDate, LocalDate eDate){
+		Query query = new Query();
+		query.addCriteria(Criteria.where("user_id").is(userId)
+	                .and("created_date").gte(sDate).lte(eDate));
+		List<Mood> result = mongoTemplate.find(query, Mood.class);
+	    return result.isEmpty() ? null : result;
+	}
 	
 }
