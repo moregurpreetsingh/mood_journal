@@ -232,10 +232,11 @@ export default function InsightsPage() {
         }
 
         .insights-page-title {
-          font-size: 2.5rem;
+          font-size: 1.26rem;
           font-weight: 700;
           color: var(--neutral-dark);
           margin: 0 0 0.5rem 0;
+          text-align: left;
         }
 
         .insights-page-subtitle {
@@ -278,10 +279,7 @@ export default function InsightsPage() {
       <div className="insights-main-container">
         <div className="insights-content-wrapper">
           <header className="insights-header">
-            <h1 className="insights-page-title">Weekly Mood Insights</h1>
-            <p className="insights-page-subtitle">
-              Analyze your mood patterns and trends over time
-            </p>
+            <h1 className="insights-page-title">Weekly Insights</h1>
           </header>
             
             {/* Check if there's any data */}

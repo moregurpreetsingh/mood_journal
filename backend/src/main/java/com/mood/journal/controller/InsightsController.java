@@ -24,12 +24,30 @@ public class InsightsController {
 	@PostMapping("/getWeeklyAverage")
 	public ResponseEntity<?> weeklyAverage(@RequestBody MoodRequest moodRequest){
 		try {
-			List<Mood> moods = insightsService.getWeeklyAverage(moodRequest.getUserId());
+			ResponseEntity<?> moods = insightsService.getWeeklyAverage(moodRequest.getUserId());
 			return ResponseEntity.ok(moods);
 		}catch(Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage()); 
-		}
-		
+		}	
 	}
 	
+	@PostMapping("/getTopMoods")
+	public ResponseEntity<?> getTopMoods(@RequestBody MoodRequest moodRequest){
+		try {
+			ResponseEntity<?> moods = insightsService.getTopMoods(moodRequest.getUserId());
+			return moods;
+		}catch(Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage()); 
+		}
+	}
+
+	@PostMapping("/getMoodShifts")
+	public ResponseEntity<?> getMoodShifts(@RequestBody MoodRequest moodRequest){
+		try {
+			String shifts = insightsService.calculateMoodShifts(moodRequest.getUserId());
+			return ResponseEntity.ok(shifts);
+		}catch(Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage()); 
+		}
+	}
 }
