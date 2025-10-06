@@ -16,7 +16,7 @@
 
 .insights-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -82,11 +82,12 @@
 
 /* Metric display styles */
 .metric-large {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--neutral-dark);
   line-height: 1;
   margin-bottom: 0.5rem;
+  
 }
 
 .metric-subtitle {
@@ -171,4 +172,23 @@
 .insight-card:focus-within {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+.metric-large.perfect {
+  color: #28a745; /* Green */
+  font-weight: 700;
+}
+
+.metric-large.stable {
+  color: #007bff; /* Blue */
+  font-weight: 700;
+}
+
+.metric-large.variable {
+  color: #ffc107; /* Amber/Yellow */
+  font-weight: 700;
+}
+
+.metric-large.unstable {
+  color: #dc3545; /* Red */
+  font-weight: 700;
 }
