@@ -31,3 +31,15 @@ export const changePassword = async ( userData ) => {
 export const changeUserName = async ( userData ) => {
   return api.post("user/changeUserName", userData );
 }
+
+export const getWeeklyAverage = async ( userData ) => {
+  return api.post("insights/getWeeklyAverage", userData );
+}
+
+export const getTopMoods = async ( userData ) => {
+  return api.post("insights/getTopMoods", userData );
+}
+
+export const getMoodShifts = async ( userData ) => {
+  return api.post("insights/getMoodShifts", userData );
+}

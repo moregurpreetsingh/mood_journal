@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import SideMenu from "../../components/SideMenu";
 import { useUser } from "../../contexts/UserContext";
+import AuthGuard from "../../components/AuthGuard";
 import { getUserDetails, changePassword, changeUserName } from "../../services/Api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -97,7 +98,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <>
+    <AuthGuard>
       <div className="dashboard-wrapper">
         <aside className="side-menu-container">
           <SideMenu />
@@ -180,6 +181,6 @@ export default function ProfilePage() {
 
       {/* Toast container */}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick />
-    </>
+    </AuthGuard>
   );
 }

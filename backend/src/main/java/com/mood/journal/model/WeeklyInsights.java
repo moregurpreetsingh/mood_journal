@@ -16,20 +16,22 @@ public class WeeklyInsights {
 
 	private static final long serialVersionUID = 1L;
 	
-	@Field("/user_Id")
+	@Field("user_Id")
 	private String userId;
 
-	@Field("/week_date")
+	@Field("week_date")
 	private LocalDate weekDate;
 	
-	@Field("/top_mood")
+	@Field("top_mood")
 	private String topMood;
 	
-	@Field("/average_scrore")
+	@Field("average_scrore")
 	private String avergeScore;
 	
-	@Field("/mood_shifts")
+	@Field("mood_shifts")
 	private String moodShifts;
 	
+	@Field("created_date")
+	private LocalDateTime createdDate;
 	
 }

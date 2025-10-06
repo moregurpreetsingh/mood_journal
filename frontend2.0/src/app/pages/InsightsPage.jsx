@@ -11,6 +11,7 @@ import {
   PositiveVsNegative,
 } from "../../components/insights"
 import AppSidebar from "../../components/Sidemenu"
+import AuthGuard from "../../components/AuthGuard"
 import "../../components/insights/insights.css"
 
 const STORAGE_KEY = "mood-log-v1"
@@ -205,7 +206,7 @@ export default function InsightsPage() {
   }, [allEntries])
 
   return (
-    <>
+    <AuthGuard>
       <style>{`
         .insights-main-container {
           padding: 24px;
@@ -307,7 +308,7 @@ export default function InsightsPage() {
             {/* )} */}
         </div>
       </div>
-    </>
+    </AuthGuard>
   )
 }
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import MoodPickerDialog from "../../components/MoodPickerDialog";
 import { mostRecentTodayMood, mostRecentMoods } from "../../services/Api";
 import { useUser } from "../../contexts/UserContext";
+import AuthGuard from "../../components/AuthGuard";
 import SideMenu from "../../components/SideMenu";
 
 export default function DashboardPage() {
@@ -115,7 +116,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <>
+    <AuthGuard>
       <style>{`
         /* Existing styles */
 
@@ -447,6 +448,6 @@ export default function DashboardPage() {
           />
         </div>
       </div>
-    </>
+    </AuthGuard>
   );
 }

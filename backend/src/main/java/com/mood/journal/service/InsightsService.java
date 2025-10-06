@@ -4,10 +4,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -72,7 +70,7 @@ public class InsightsService {
 		
 		List<Mood> moods = moodDao.getWeeklyMoods(userId, weekStart, weekEnd);
 		
-		if (moods.isEmpty()) {
+		if (moods == null || moods.isEmpty()) {
 			res.put("aScore", "0.0");
 			res.put("tMood", "No mood data");
 	        return ResponseEntity.ok(res);
@@ -102,12 +100,22 @@ public class InsightsService {
 	        }
 	    }
 	    
-	    WeeklyInsights insight = weeklyInsightsDao.isWeeklyInsights(weekEnd, userId);
+	    //for current weak
+	    WeeklyInsights insight = weeklyInsightsDao.getWeeklyInsights(weekStart, userId);
 	    
 	    if(insight == null) {
 	    	insight = new WeeklyInsights();
+		    insight.setUserId(userId);
+		    insight.setWeekDate(weekStart);
+		    insight.setCreatedDate(LocalDateTime.now());
 	    }
-	    double previousAScore = insight != null && insight.getAvergeScore() != null ? Double.parseDouble(insight.getAvergeScore()) : 0.0;
+
+		// Get previous week's start date
+		LocalDate previousWeekStart = weekStart.minusWeeks(1);
+	
+		// Fetch previous week's insights
+		WeeklyInsights previousInsight = weeklyInsightsDao.getWeeklyInsights(previousWeekStart, userId);
+	    double previousAScore = getPreviousWeakScore(userId);
 	    
 	    
 	    double averageScore = (double) totalScore / totalCount;
@@ -122,10 +130,8 @@ public class InsightsService {
 	    }
 	    
 	    insight.setAvergeScore(String.valueOf(averageScore));
-	    insight.setWeekDate(weekStart);
 	    insight.setTopMood(topMood);
-	    insight.setUserId(userId);
-	    mongoTemplate.save(insight);
+//	    mongoTemplate.save(insight);
 	    
 	    res.put("topMood", topMood);
 	    res.put("averageScore", String.valueOf(averageScore));
@@ -197,16 +203,59 @@ public class InsightsService {
 	        prevMood = currentMood;
 	    }
 	    
-	    WeeklyInsights insight = weeklyInsightsDao.isWeeklyInsights(weekEnd, userId);
+	    WeeklyInsights insight = weeklyInsightsDao.getWeeklyInsights(weekEnd, userId);
 	    if(insight == null) {
 	    	insight = new WeeklyInsights();
+		    insight.setWeekDate(weekStart);
+		    insight.setUserId(userId);
+		    insight.setCreatedDate(LocalDateTime.now());
 	    }
 	    insight.setMoodShifts(String.valueOf(shifts));
-	    insight.setWeekDate(weekStart);
-	    insight.setUserId(userId);
-	    mongoTemplate.save(insight);
+//	    mongoTemplate.save(insight);
 
 	    return String.valueOf(shifts);
+	}
+	
+	public double getPreviousWeakScore(String userId) {
+		LocalDate today = LocalDate.now();
+
+		LocalDate weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+		LocalDate weekEnd = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+		
+		List<Mood> moods = moodDao.getWeeklyMoods(userId, weekStart, weekEnd);
+		
+		if(moods == null || moods.isEmpty()) {
+			return 0.0;
+		}
+		
+		Map<String, Integer> frequencyMoods = moods.stream()
+			    .collect(Collectors.groupingBy(Mood::getMood, Collectors.collectingAndThen(Collectors.counting(), Long::intValue)));
+
+		int totalScore = 0;
+	    int totalCount = 0;
+
+	    String topMood = null;
+	    int maxFrequency = 0;
+
+	    for (Map.Entry<String, Integer> entry : frequencyMoods.entrySet()) {
+	        String moodId = entry.getKey();
+	        int frequency = entry.getValue();
+	        String normalizedMoodId = moodId.trim().toLowerCase();
+	        int moodScore = MOOD_SCORES.getOrDefault(normalizedMoodId, 0);
+
+	        totalScore += moodScore * frequency;
+	        totalCount += frequency;
+
+	        if (frequency > maxFrequency) {
+	            maxFrequency = frequency;
+	            topMood = normalizedMoodId;
+	        }
+	    }
+	    
+	    double averageScore = (double) totalScore / totalCount;
+	    
+	    return averageScore;
 	}
 	
 }
