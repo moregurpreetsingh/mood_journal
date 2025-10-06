@@ -191,5 +191,3 @@ Serve the frontend via a static host (e.g., Nginx, Vercel) and point it at your 
 - Frontend can’t reach API: confirm backend is on port 8080 and the frontend is calling the correct base URL.
 
 
-## License
-Add your chosen license here.
