@@ -1,5 +1,6 @@
 package com.mood.journal.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -11,8 +12,9 @@ import com.mood.journal.util.MongoUtil;
 
 @Repository
 public class UserDaoImpl implements UserDao {
-	
-	private final MongoTemplate mongoTemplate = MongoUtil.getMongoTemplate();
+
+	@Autowired
+	private MongoTemplate mongoTemplate;
 	
 	public boolean existsByEmail(String email) {
 		Query query = new Query();

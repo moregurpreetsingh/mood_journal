@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -18,8 +19,9 @@ import com.mood.journal.util.MongoUtil;
 
 @Repository
 public class MoodDaoImpl implements MoodDao{
-	
-	private final MongoTemplate mongoTemplate = MongoUtil.getMongoTemplate();
+
+	@Autowired
+	private MongoTemplate mongoTemplate;
 	
 	public List<Mood> todayMoods(String userId){
 		LocalDate today = LocalDate.now();
