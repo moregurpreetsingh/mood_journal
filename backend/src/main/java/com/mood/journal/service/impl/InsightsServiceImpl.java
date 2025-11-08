@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.mood.journal.dao.MoodDao;
 import com.mood.journal.dao.WeeklyInsightsDao;
@@ -20,6 +21,7 @@ import com.mood.journal.model.Mood;
 import com.mood.journal.model.WeeklyInsights;
 import com.mood.journal.service.InsightsService;
 
+@Service
 public class InsightsServiceImpl implements InsightsService {
 	
 	@Autowired

@@ -5,11 +5,13 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Service;
 
 import com.mood.journal.dao.UserDao;
 import com.mood.journal.model.User;
 import com.mood.journal.service.UserService;
 
+@Service
 public class UserServiceImpl implements UserService {
 
 	@Autowired

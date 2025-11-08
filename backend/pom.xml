@@ -75,6 +75,11 @@
 	        <version>1.18.30</version>
 	        <scope>provided</scope>
 	    </dependency>
+	    <dependency>
+		    <groupId>com.openhtmltopdf</groupId>
+		    <artifactId>openhtmltopdf-pdfbox</artifactId>
+		    <version>1.0.10</version>
+		</dependency>
 
 	</dependencies>
 

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 import com.mood.journal.model.User;
 
-@Service
 public interface UserService {
 
 	public User registerUser(String username, String email, String password)  throws Exception;
